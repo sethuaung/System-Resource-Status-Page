@@ -1,0 +1,39 @@
+NGINX Configuration for HSTS and HTTPS
+Use this NGINX configuration to enable HTTPS with self-signed SSL and HSTS:
+
+server {
+    listen 443 ssl;
+    server_name localhost;
+
+    root /var/www/html/mypage;
+    index index.php;
+
+    ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
+    ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+    ssl_dhparam /etc/ssl/certs/dhparam.pem;
+
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    # HSTS header
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/var/run/php/php7.4-fpm.sock; # Update PHP version if necessary
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+}
+
+server {
+    listen 80;
+    server_name localhost;
+
+    return 301 https://$host$request_uri; # Redirect HTTP to HTTPS
+}
