@@ -62,7 +62,7 @@ function getSystemData() {
 function storeInMongoDB($data) {
     try {
         // Connect to MongoDB
-        $client = new Client("mongodb+srv://jamesmilner89:vAUhvi0e8lpceZPs@serverstatus.u1edm6n.mongodb.net/");
+        $client = new Client("mongodb+srv://<yourname>:<xxxx@mongodb.net/");
         $collection = $client->systemMonitoring->metrics; // Database: systemMonitoring, Collection: metrics
 
         // Insert data into MongoDB
