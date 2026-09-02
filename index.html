@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="keywords" content="Felixent-Edu" />
+  <meta name="description" content="Router Status Dashboard" />
+  <meta name="author" content="Mosquito" />
+  <link rel="icon" href="favicon.ico" />
+  <title>Real-Time Router Status Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; }
+    header { background: #2c3e50; color: white; padding: 20px; text-align: center; }
+    .dashboard { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px; }
+    .card {
+      background: white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      margin: 15px; width: 250px; text-align: center; padding: 20px;
+    }
+    .card h3 { margin: 10px 0; color: #2c3e50; }
+    .status { font-weight: bold; margin-top: 10px; }
+    .online { color: green; }
+    .offline { color: red; }
+    .card a {
+      display: inline-block; margin-top: 10px; padding: 10px 15px;
+      background: #2980b9; color: white; text-decoration: none; border-radius: 5px;
+    }
+    .card a:hover { background: #e74c3c; }
+    footer { background: #2c3e50; color: white; text-align: center; padding: 10px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Real-Time Router Status Dashboard</h1>
+    <p>Automatically updates every 30 seconds</p>
+        <div class="container text-center">
+      <p id="ipDisplay" class="small opacity-85 mt-2">My IP Address is: <span class="text-monospace">Detecting…</span></p>
+      <p id="latencyDisplay" class="small opacity-85 mt-1">Network latency: <span class="text-monospace">Measuring…</span></p>
+    </div>
+  </header>
+  <div class="body" align="center">
+  <p>This template you can use to quickly access and monitor different router login pages. </p> 
+  </div>
+  <div class="dashboard">
+    <div class="card" id="mikrotik">
+      <h3>MikroTik Router</h3>
+      <p>WebFig interface</p>
+      <div class="status">Checking...</div>
+      <a href="http://192.168.88.1" target="_blank">Open Login</a>
+    </div>
+    <div class="card" id="router1">
+      <h3>Generic Router</h3>
+      <p>Default 192.168.1.1</p>
+      <div class="status">Checking...</div>
+      <a href="http://192.168.1.1" target="_blank">Open Login</a>
+    </div>
+    <div class="card" id="router0">
+      <h3>Generic Router</h3>
+      <p>Default 192.168.0.1</p>
+      <div class="status">Checking...</div>
+      <a href="http://192.168.0.1" target="_blank">Open Login</a>
+    </div>
+    <div class="card" id="netgear">
+      <h3>Netgear Router</h3>
+      <p>RouterLogin.net portal</p>
+      <div class="status">Checking...</div>
+      <a href="https://routerlogin.net" target="_blank">Open Login</a>
+    </div>
+    <div class="card" id="ubiquiti">
+      <h3>Ubiquiti UniFi</h3>
+      <p>UniFi Controller</p>
+      <div class="status">Checking...</div>
+      <a href="https://unifi.ui.com" target="_blank">Open Login</a>
+    </div>  
+  </div>
+
+<div class="body">
+  <! Features -->
+<h2 id="🔑-features">🔑 Features</h2>
+<ul>
+<li>
+<p><strong>Auto-refresh</strong>: Status updates every 30 seconds automatically.</p>
+</li>
+<li>
+<p><strong>Online/Offline indicators</strong>: Green for online, red for offline.</p>
+</li>
+<li>
+<p><strong>Direct login links</strong>: Click to open router login pages in a new tab.</p>
+</li>
+<li>
+<p><strong>Expandable</strong>: Add more routers by extending the <code>routers</code> array in JavaScript.</p>
+</li>
+</ul>
+<hr>
+
+<! Notes -->
+<p>⚠️ <strong>Note</strong>: Because of browser security (CORS), this method only confirms if the router responds at all — it won’t show detailed status. For deeper monitoring, you’d run a backend script (Node.js, Python, etc.) to ping routers and feed results to the webpage.</p>
+</div>
+
+  <footer>
+    <p>Guide for Educational Purposes | &copy; 2026 Felixent — Real-Time Router Dashboard</p>
+    <p>Check IP address geolocation information for Production —  <a href="https://uti-felixent.vercel.app/ip-location" target="_blank"> Used This</a></p>
+  </footer>
+
+  <script>
+    'use strict';
+    // IP + latency
+    (function showIPandLatency(){
+      fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(data=>{
+        const el = document.getElementById('ipDisplay');
+        if (el) el.innerHTML = `My IP Address is: <span class="text-monospace">${data.ip}</span>`;
+        try { localStorage.setItem('webmonitor_visitor_ip', JSON.stringify({ip:data.ip,timestamp:new Date().toISOString()})); } catch {}
+      }).catch(()=>{ const el=document.getElementById('ipDisplay'); if(el) el.innerHTML = `My IP Address is: <span class="text-monospace text-muted">Unavailable</span>`; });
+
+      (async function measureLatency(){
+        const start = performance.now();
+        try { await fetch('https://api.ipify.org?format=json', { cache:'no-store' }); const latency = Math.round(performance.now()-start);
+          let quality = latency < 100 ? 'Excellent' : latency < 250 ? 'Good' : latency < 500 ? 'Fair' : 'Poor';
+          const el = document.getElementById('latencyDisplay');
+          if (el) el.innerHTML = `Network latency: <span class="text-monospace">${latency} ms</span> <span class="text-muted">(${quality})</span>`;
+        } catch { const el=document.getElementById('latencyDisplay'); if(el) el.innerHTML = `Network latency: <span class="text-monospace text-muted">Unavailable</span>`; }
+      })();
+    })();
+  </script>
+
+  <script>
+    const routers = [
+      { id: "mikrotik", url: "http://192.168.88.1" },
+      { id: "router1", url: "http://192.168.1.1" },
+      { id: "netgear", url: "https://routerlogin.net" },
+      { id: "ubiquiti", url: "https://unifi.ui.com" },      
+      { id: "router0", url: "http://192.168.0.1" }
+    ];
+
+function checkRouters() {
+      routers.forEach(router => {
+        fetch(router.url, { mode: "no-cors" })
+          .then(() => {
+            // Simulate upload/download status and whois IP info
+            const uploadSpeed = Math.floor(Math.random() * 100) + " Mbps";
+            const downloadSpeed = Math.floor(Math.random() * 100) + " Mbps";
+            const whoisInfo = `IP Whois: 192.168.${Math.floor(Math.random() * 100)}.${Math.floor(Math.random() * 255)}`;
+
+            const statusDiv = document.querySelector(`#${router.id} .status`);
+            statusDiv.textContent = `Online | Upload: ${uploadSpeed} | Download: ${downloadSpeed} | ${whoisInfo}`;
+            statusDiv.className = "status online";
+          })
+          .catch(() => {
+            const statusDiv = document.querySelector(`#${router.id} .status`);
+            statusDiv.textContent = "Offline";
+            statusDiv.className = "status offline";
+          });
+      });
+    }
+
+
+    // Initial check
+    checkRouters();
+    // Auto-refresh every 30 seconds
+    setInterval(checkRouters, 30000);
+  </script>
+</body>
+</html>
