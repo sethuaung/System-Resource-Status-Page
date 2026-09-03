@@ -1,0 +1,68 @@
+[package]
+name = "kunger"
+version = "0.2.0"
+default-run = "kunger"
+description = "Kunger — Linux Software Inventory Manager"
+authors = ["Kunger contributors"]
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "kunger_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "kunger"
+path = "src/main.rs"
+required-features = ["desktop"]
+
+[[bin]]
+name = "kunger-cli"
+path = "bin/kunger-cli.rs"
+
+[[bin]]
+name = "test-tui"
+path = "bin/test-tui.rs"
+
+[[bin]]
+name = "kunger-cli-simple"
+path = "bin/kunger-cli-simple.rs"
+
+[features]
+desktop = ["dep:tauri", "dep:tauri-plugin-log", "dep:tauri-build"]
+default = ["desktop"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [], optional = true }
+
+[dependencies]
+log = "0.4"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "2"
+async-trait = "0.1"
+tokio = { version = "1", features = ["rt", "macros", "time", "sync", "process", "io-util"] }
+tokio-util = "0.7"
+dirs = "6"
+futures = "0.3"
+rusqlite = { version = "0.32", features = ["bundled"] }
+serde_yaml = "0.9"
+csv = "1"
+ratatui = "0.28"
+crossterm = { version = "0.28", features = ["event-stream"] }
+tauri = { version = "2", features = [], optional = true }
+tauri-plugin-log = { version = "2", optional = true }
+
+[lints.clippy]
+all = "warn"
+unwrap_used = "warn"
+expect_used = "warn"
+
+[lints.rust]
+unsafe_code = "forbid"
+
